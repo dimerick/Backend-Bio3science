@@ -8,6 +8,8 @@ from rest_framework import status, permissions
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 from django.http import Http404
+import googlemaps
+from django.conf import settings
 
 # Create your views here.
 
@@ -19,10 +21,24 @@ class HelloBio3science(APIView):
         content = {"message": "Alersnet Rocking"}
         return Response(content)
 
+class Place(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+
+
+    def get(self, request, input_search):
+
+        gmaps = googlemaps.Client(key=settings.GOOGLE_KEY)
+
+        #input_search = request.get['input_search']
+
+        result = gmaps.find_place(input_search, 'textquery', ['business_status', 'formatted_address', 'geometry', 'icon', 'name', 'photos', 'place_id', 'plus_code', 'types'])
+
+        return Response(result)
+
 class AccountList(APIView):
 
     def get(self, request, format=None):
-        users = User.objects.all()
+        users = CustomUser.objects.all()
         serializer = CustomUserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -43,7 +59,7 @@ class AccountDetail(APIView):
     def get_object(self, pk):
         try:
             return CustomUser.objects.get(id=pk)
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
