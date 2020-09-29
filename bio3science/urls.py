@@ -10,5 +10,6 @@ urlpatterns = [
     path('account', views.AccountList.as_view(), name='user-list'),
     path('account/<int:pk>', views.AccountDetail.as_view(), name='user-detail'),
     path('place/<str:input_search>', views.Place.as_view(), name='place'),
+    path('email-disponible/<str:email>', views.AccountByEmail.as_view(), name='email-disponible'),
 
 ]

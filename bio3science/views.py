@@ -10,6 +10,7 @@ from .serializers import CustomUserSerializer
 from django.http import Http404
 import googlemaps
 from django.conf import settings
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -31,7 +32,9 @@ class Place(APIView):
 
         #input_search = request.get['input_search']
 
-        result = gmaps.find_place(input_search, 'textquery', ['business_status', 'formatted_address', 'geometry', 'icon', 'name', 'photos', 'place_id', 'plus_code', 'types'])
+        #result = gmaps.find_place(input_search, 'textquery', ['business_status', 'formatted_address', 'geometry', 'icon', 'name', 'photos', 'place_id', 'plus_code', 'types'])
+
+        result = gmaps.places_autocomplete_query(input_search, 3)
 
         return Response(result)
 
@@ -54,7 +57,10 @@ class AccountList(APIView):
     
 
 
+
 class AccountDetail(APIView):
+
+    
 
     def get_object(self, pk):
         try:
@@ -62,6 +68,7 @@ class AccountDetail(APIView):
         except CustomUser.DoesNotExist:
             raise Http404
 
+    
     def get(self, request, pk, format=None):
         print(pk)
         user = self.get_object(pk)
@@ -81,3 +88,17 @@ class AccountDetail(APIView):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class AccountByEmail(APIView):
+
+    def get_object_by_email(self, email):
+        try:
+            return CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            raise Http404
+
+    
+    def get(self, request, email, format=None):
+        user = self.get_object_by_email(email)
+        serializer = CustomUserSerializer(user)
+        return Response(serializer.data)
+    
