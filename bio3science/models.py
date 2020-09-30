@@ -1,6 +1,6 @@
 from django.db import models
+from django.contrib.gis.db import models as models_gis
 from django.contrib.auth.models import UserManager, AbstractBaseUser
-from django.db import models
 
 # Create your models here.
 
@@ -20,3 +20,18 @@ class CustomUser(AbstractBaseUser):
     class Meta:
         verbose_name = 'user'
         verbose_name_plural = 'users'
+
+class Degree(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+class FieldsOfStudy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, primary_key=True, on_delete=models.CASCADE)
+    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
+    field_of_study = models.ForeignKey(FieldsOfStudy, on_delete=models.CASCADE)
+    description = models.CharField(max_length=1000)
+    websites = models.CharField(max_length=1000)
+    university = models.CharField(max_length=200, unique=True)
+    university_loc = models_gis.PointField()

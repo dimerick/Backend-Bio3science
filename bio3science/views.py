@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import CustomUser, Profile, Degree, FieldsOfStudy
+from .serializers import CustomUserSerializer, ProfileSerializer, DegreeSerializer
 from django.http import Http404
 import googlemaps
 from django.conf import settings
@@ -100,5 +100,35 @@ class AccountByEmail(APIView):
     def get(self, request, email, format=None):
         user = self.get_object_by_email(email)
         serializer = CustomUserSerializer(user)
+        return Response(serializer.data)
+
+class ProfileList(APIView):
+
+    def get(self, request, format=None):
+        objs = Profile.objects.all()
+        serializer = ProfileSerializer(objs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProfileSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            obj = serializer.save()
+            if obj:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DegreeList(APIView):
+
+    def get(self, request, format=None):
+        degrees = Degree.objects.all()
+        serializer = DegreeSerializer(degrees, many=True)
+        return Response(serializer.data)
+
+class FieldsOfStudyList(APIView):
+
+    def get(self, request, format=None):
+        items = FieldsOfStudy.objects.all()
+        serializer = DegreeSerializer(items, many=True)
         return Response(serializer.data)
     
