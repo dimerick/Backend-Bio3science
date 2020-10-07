@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Profile, Degree, FieldsOfStudy
+from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectXUniversity, ProjectXCommunity
 
 
 
@@ -29,6 +29,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         obj.save()
         return obj
 
+class UniversitySerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = University
+        fields = '__all__'
+        
+    def create(self, validated_data):
+        obj = super(UniversitySerializer, self).create(validated_data)
+        obj.save()
+        return obj
+
 class DegreeSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -39,4 +51,28 @@ class FieldsOfStudySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FieldsOfStudy
+        fields = '__all__'
+
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+class CommunitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Community
+        fields = '__all__'
+
+class ProjectXUniversitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProjectXUniversity
+        fields = '__all__'
+
+class ProjectXCommunitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProjectXCommunity
         fields = '__all__'
