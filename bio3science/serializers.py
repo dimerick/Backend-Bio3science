@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectXUniversity, ProjectXCommunity
+from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectXUniversity, ProjectXCommunity, ProjectXUser
 
 
 
@@ -57,6 +57,12 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
+        fields = '__all__'
+
+class ProjectXUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProjectXUser
         fields = '__all__'
 
 class CommunitySerializer(serializers.ModelSerializer):

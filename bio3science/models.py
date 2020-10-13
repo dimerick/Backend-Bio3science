@@ -43,26 +43,40 @@ class Profile(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=1000)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    main_university = models.ForeignKey(University, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('name', 'created_by', 'main_university'))
 
 class ProjectImage(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     url = models.CharField(max_length=255)
 
+class ProjectXUser(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('project', 'user'))
+
 class Community(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models_gis.PointField()
 
-class ProjectXUniversityType(models.Model):
-    name = models.CharField(max_length=200)
+# class ProjectXUniversityType(models.Model):
+#     name = models.CharField(max_length=200)
+
 
 
 class ProjectXUniversity(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
-    project_x_university_type = models.ForeignKey(ProjectXUniversityType, on_delete=models.CASCADE)
+    # project_x_university_type = models.ForeignKey(ProjectXUniversityType, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('project', 'university', 'project_x_university_type'))
+        unique_together = (('project', 'university'))
 
 
 class ProjectXCommunity(models.Model):
@@ -71,6 +85,3 @@ class ProjectXCommunity(models.Model):
 
     class Meta:
         unique_together = (('project', 'community'))
-
-
-

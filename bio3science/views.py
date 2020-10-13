@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectXUniversity, ProjectXCommunity
-from .serializers import CustomUserSerializer, ProfileSerializer, UniversitySerializer, DegreeSerializer, ProjectSerializer, CommunitySerializer, ProjectXUniversitySerializer, ProjectXCommunitySerializer
+from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectXUniversity, ProjectXCommunity, ProjectXUser
+from .serializers import CustomUserSerializer, ProfileSerializer, UniversitySerializer, DegreeSerializer, ProjectSerializer, CommunitySerializer, ProjectXUniversitySerializer, ProjectXCommunitySerializer, ProjectXUserSerializer
 from django.http import Http404
 import googlemaps
 from django.conf import settings
@@ -187,7 +187,13 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class ProjectList(APIView):
 
     def get(self, request, format=None):
-        objs = Project.objects.all()
+
+        name = request.GET.get('name', None)
+        if(name):
+            objs = Project.objects.filter(name__icontains=name)
+        else:
+            objs = Project.objects.all()
+
         serializer = ProjectSerializer(objs, many=True)
         return Response(serializer.data)
 
@@ -226,6 +232,24 @@ class ProjectDetail(APIView):
         obj = self.get_object(pk)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ProjectXUserList(APIView):
+
+    def get(self, request, format=None):
+
+        objs = ProjectXUser.objects.all()
+
+        serializer = ProjectXUserSerializer(objs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProjectXUserSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            obj = serializer.save()
+            if obj:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommunityList(APIView):

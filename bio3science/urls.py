@@ -16,7 +16,7 @@ urlpatterns = [
     path('profile', views.ProfileList.as_view(), name='profile-list'),
     path('university', views.UniversityList.as_view(), name='university-list'),
     path('generate-token-reset-password', views.GenerateTokenResetPassword.as_view(), name='generate-token-reset-password'),
-    # path('university/<str:input_search>', views.UniversityByName.as_view(), name='place'),
-    
+    path('project', views.ProjectList.as_view(), name='project-list'),
+    path('project-x-user', views.ProjectXUserList.as_view(), name='project-x-user'),
 
 ]
