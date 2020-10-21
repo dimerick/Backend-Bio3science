@@ -139,6 +139,42 @@ class UniversityList(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UniversityDetail(APIView):    
+
+    def get_object(self, pk):
+        try:
+            return University.objects.get(id=pk)
+        except University.DoesNotExist:
+            raise Http404
+
+    
+    def get(self, request, pk, format=None):
+        obj = self.get_object(pk)
+        serializer = UniversitySerializer(obj)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        obj = self.get_object(pk)
+
+        # created_by = request.GET.get('created_by', None)
+        # if(created_by):
+        #     obj.created_by = CustomUser.objects.get(id=created_by)
+        #     obj.save()
+        #     serializer = UniversitySerializer(data=obj)
+        #     if serializer.is_valid():
+        #         return Response(serializer.data)
+
+        serializer = UniversitySerializer(obj, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        obj = self.get_object(pk)
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class DegreeList(APIView):
 
     def get(self, request, format=None):

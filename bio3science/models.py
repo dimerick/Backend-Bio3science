@@ -30,6 +30,8 @@ class FieldsOfStudy(models.Model):
 class University(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models_gis.PointField()
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, primary_key=True, on_delete=models.CASCADE)
@@ -64,6 +66,8 @@ class ProjectXUser(models.Model):
 class Community(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models_gis.PointField()
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 # class ProjectXUniversityType(models.Model):
 #     name = models.CharField(max_length=200)

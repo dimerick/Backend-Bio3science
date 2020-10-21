@@ -71,6 +71,11 @@ class CommunitySerializer(serializers.ModelSerializer):
         model = Community
         fields = '__all__'
 
+    def create(self, validated_data):
+        obj = super(CommunitySerializer, self).create(validated_data)
+        obj.save()
+        return obj
+
 class ProjectXUniversitySerializer(serializers.ModelSerializer):
 
     class Meta:
