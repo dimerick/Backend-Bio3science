@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectXUniversity, ProjectXCommunity, ProjectXUser
-from .serializers import CustomUserSerializer, ProfileSerializer, UniversitySerializer, DegreeSerializer, ProjectSerializer, CommunitySerializer, ProjectXUniversitySerializer, ProjectXCommunitySerializer, ProjectXUserSerializer
+from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community
+from .serializers import CustomUserSerializer, ProfileSerializer, UniversitySerializer, DegreeSerializer, ProjectSerializer, CommunitySerializer
 from django.http import Http404
 import googlemaps
 from django.conf import settings
@@ -269,23 +269,31 @@ class ProjectDetail(APIView):
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ProjectXUserList(APIView):
-
-    def get(self, request, format=None):
-
-        objs = ProjectXUser.objects.all()
-
-        serializer = ProjectXUserSerializer(objs, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ProjectXUserSerializer(data=request.data)
-        
+    def patch(self, request, pk, format=None):
+        obj = self.get_object(pk)
+        serializer = ProjectSerializer(obj, data=request.data, partial=True)
         if serializer.is_valid():
-            obj = serializer.save()
-            if obj:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class ProjectXUserList(APIView):
+
+#     def get(self, request, format=None):
+
+#         objs = ProjectXUser.objects.all()
+
+#         serializer = ProjectXUserSerializer(objs, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = ProjectXUserSerializer(data=request.data)
+        
+#         if serializer.is_valid():
+#             obj = serializer.save()
+#             if obj:
+#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommunityList(APIView):
@@ -330,89 +338,89 @@ class CommunityDetail(APIView):
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ProjectXUniversityList(APIView):
+# class ProjectXUniversityList(APIView):
 
-    def get(self, request, format=None):
-        objs = ProjectXUniversity.objects.all()
-        serializer = ProjectXUniversitySerializer(objs, many=True)
-        return Response(serializer.data)
+#     def get(self, request, format=None):
+#         objs = ProjectXUniversity.objects.all()
+#         serializer = ProjectXUniversitySerializer(objs, many=True)
+#         return Response(serializer.data)
 
-    def post(self, request):
-        serializer = ProjectXUniversitySerializer(data=request.data)
+#     def post(self, request):
+#         serializer = ProjectXUniversitySerializer(data=request.data)
         
-        if serializer.is_valid():
-            obj = serializer.save()
-            if obj:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         if serializer.is_valid():
+#             obj = serializer.save()
+#             if obj:
+#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ProjectXUniversityDetail(APIView):    
+# class ProjectXUniversityDetail(APIView):    
 
-    def get_object(self, pk):
-        try:
-            return ProjectXUniversity.objects.get(id=pk)
-        except ProjectXUniversity.DoesNotExist:
-            raise Http404
+#     def get_object(self, pk):
+#         try:
+#             return ProjectXUniversity.objects.get(id=pk)
+#         except ProjectXUniversity.DoesNotExist:
+#             raise Http404
 
-    def get(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        serializer = ProjectXUniversitySerializer(obj)
-        return Response(serializer.data)
+#     def get(self, request, pk, format=None):
+#         obj = self.get_object(pk)
+#         serializer = ProjectXUniversitySerializer(obj)
+#         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        serializer = ProjectXUniversitySerializer(obj, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, pk, format=None):
+#         obj = self.get_object(pk)
+#         serializer = ProjectXUniversitySerializer(obj, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk, format=None):
+#         obj = self.get_object(pk)
+#         obj.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ProjectXCommunityList(APIView):
+# class ProjectXCommunityList(APIView):
 
-    def get(self, request, format=None):
-        objs = ProjectXCommunity.objects.all()
-        serializer = ProjectXCommunitySerializer(objs, many=True)
-        return Response(serializer.data)
+#     def get(self, request, format=None):
+#         objs = ProjectXCommunity.objects.all()
+#         serializer = ProjectXCommunitySerializer(objs, many=True)
+#         return Response(serializer.data)
 
-    def post(self, request):
-        serializer = ProjectXCommunitySerializer(data=request.data)
+#     def post(self, request):
+#         serializer = ProjectXCommunitySerializer(data=request.data)
         
-        if serializer.is_valid():
-            obj = serializer.save()
-            if obj:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         if serializer.is_valid():
+#             obj = serializer.save()
+#             if obj:
+#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ProjectXCommunityDetail(APIView):    
+# class ProjectXCommunityDetail(APIView):    
 
-    def get_object(self, pk):
-        try:
-            return ProjectXCommunity.objects.get(id=pk)
-        except ProjectXCommunity.DoesNotExist:
-            raise Http404
+#     def get_object(self, pk):
+#         try:
+#             return ProjectXCommunity.objects.get(id=pk)
+#         except ProjectXCommunity.DoesNotExist:
+#             raise Http404
 
-    def get(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        serializer = ProjectXCommunitySerializer(obj)
-        return Response(serializer.data)
+#     def get(self, request, pk, format=None):
+#         obj = self.get_object(pk)
+#         serializer = ProjectXCommunitySerializer(obj)
+#         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        serializer = ProjectXCommunitySerializer(obj, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, pk, format=None):
+#         obj = self.get_object(pk)
+#         serializer = ProjectXCommunitySerializer(obj, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk, format=None):
+#         obj = self.get_object(pk)
+#         obj.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # class UniversityByName(APIView):
 #     #permission_classes = [permissions.IsAuthenticated]

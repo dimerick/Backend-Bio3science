@@ -40,28 +40,14 @@ class Profile(models.Model):
     description = models.CharField(max_length=1000)
     websites = models.CharField(max_length=1000)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
+    
 
+# class ProjectXUser(models.Model):
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
-class Project(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.CharField(max_length=1000)
-    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    main_university = models.ForeignKey(University, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (('name', 'created_by', 'main_university'))
-
-class ProjectImage(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    url = models.CharField(max_length=255)
-
-class ProjectXUser(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (('project', 'user'))
+#     class Meta:
+#         unique_together = (('project', 'user'))
 
 class Community(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -69,23 +55,41 @@ class Community(models.Model):
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+class Project(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=1000)
+    created_by = models.ForeignKey(CustomUser, related_name="created_by", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    main_university = models.ForeignKey(University, related_name="main_university", on_delete=models.CASCADE)
+
+    users = models.ManyToManyField(CustomUser, related_name='projects', blank=True)
+    universities = models.ManyToManyField(University, related_name='projects', blank=True)
+    communities = models.ManyToManyField(Community, related_name='projects', blank=True)
+
+    class Meta:
+        unique_together = (('name', 'created_by', 'main_university'))
+
+class ProjectXImage(models.Model):
+    url = models.CharField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
 # class ProjectXUniversityType(models.Model):
 #     name = models.CharField(max_length=200)
 
 
 
-class ProjectXUniversity(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    university = models.ForeignKey(University, on_delete=models.CASCADE)
-    # project_x_university_type = models.ForeignKey(ProjectXUniversityType, on_delete=models.CASCADE)
+# class ProjectXUniversity(models.Model):
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#     university = models.ForeignKey(University, on_delete=models.CASCADE)
+#     # project_x_university_type = models.ForeignKey(ProjectXUniversityType, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = (('project', 'university'))
+#     class Meta:
+#         unique_together = (('project', 'university'))
 
 
-class ProjectXCommunity(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    community = models.ForeignKey(Community, on_delete=models.CASCADE)
+# class ProjectXCommunity(models.Model):
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#     community = models.ForeignKey(Community, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = (('project', 'community'))
+#     class Meta:
+#         unique_together = (('project', 'community'))

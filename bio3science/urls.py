@@ -18,7 +18,7 @@ urlpatterns = [
     path('university/<int:pk>', views.UniversityDetail.as_view(), name='university-detail'),
     path('generate-token-reset-password', views.GenerateTokenResetPassword.as_view(), name='generate-token-reset-password'),
     path('project', views.ProjectList.as_view(), name='project-list'),
-    path('project-x-user', views.ProjectXUserList.as_view(), name='project-x-user'), 
+    path('project/<int:pk>', views.ProjectDetail.as_view(), name='project-detail'),
     path('community', views.CommunityList.as_view(), name='community-list'),
 
 ]
