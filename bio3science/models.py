@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.gis.db import models as models_gis
 from django.contrib.auth.models import UserManager, AbstractBaseUser
+from bio3science.storage_backends import MediaStorage, PrivateStorage
 
 # Create your models here.
 
@@ -69,9 +70,10 @@ class Project(models.Model):
     class Meta:
         unique_together = (('name', 'created_by', 'main_university'))
 
-class ProjectXImage(models.Model):
-    url = models.CharField(max_length=255)
+class ProjectImage(models.Model):
+    image = models.FileField(storage=MediaStorage(), upload_to='projects/')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 # class ProjectXUniversityType(models.Model):
 #     name = models.CharField(max_length=200)

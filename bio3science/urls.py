@@ -20,5 +20,6 @@ urlpatterns = [
     path('project', views.ProjectList.as_view(), name='project-list'),
     path('project/<int:pk>', views.ProjectDetail.as_view(), name='project-detail'),
     path('community', views.CommunityList.as_view(), name='community-list'),
+    path('project-image', views.ProjectImageList.as_view(), name='project-image'),
 
 ]

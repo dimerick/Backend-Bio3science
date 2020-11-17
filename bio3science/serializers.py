@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community
+from .models import CustomUser, Profile, University, Degree, FieldsOfStudy, Project, Community, ProjectImage
 
 
 
@@ -87,6 +87,11 @@ class CommunitySerializer(serializers.ModelSerializer):
         obj = super(CommunitySerializer, self).create(validated_data)
         obj.save()
         return obj
+
+class ProjectImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectImage
+        fields = '__all__'
 
 # class ProjectXUniversitySerializer(serializers.ModelSerializer):
 
