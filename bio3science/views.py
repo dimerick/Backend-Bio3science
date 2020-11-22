@@ -122,8 +122,11 @@ class UniversityList(APIView):
     def get(self, request, format=None):
 
         name = request.GET.get('name', None)
+        exclude_id = request.GET.get('exclude_id', None)
         if(name):
             objs = University.objects.filter(name__icontains=name)
+        elif(exclude_id):
+            objs = University.objects.exclude(id=exclude_id)
         else:
             objs = University.objects.all()
 
