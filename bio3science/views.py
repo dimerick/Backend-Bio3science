@@ -15,6 +15,8 @@ from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.utils import timezone
+from django.db import connection
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -344,4 +346,41 @@ class CommunityDetail(APIView):
         obj = self.get_object(pk)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+def dictfetchall(cursor):
+        "Return all rows from a cursor as a dict"
+        columns = [col[0] for col in cursor.description]
+        return [
+            dict(zip(columns, row))
+            for row in cursor.fetchall()
+        ]
+
+class ProjectNetworkList(APIView):
+    
+    def get(self, request, format=None):
+        with connection.cursor() as cursor:
+            cursor.execute("select project.id, project.name, project.description, project.created_at, uni.name as universidad, ST_X(uni.location) as long, ST_Y(uni.location) as lat, ST_AsText(ST_Transform(uni.location, 4326)) as uni_location, user2.id as user_id, user2.name as user_name, user2.last_name as user_last_name from bio3science_project project inner join bio3science_university uni on project.main_university_id = uni.id inner join bio3science_customuser user2 on project.created_by_id = user2.id;")
+            projects = dictfetchall(cursor)
+            for i in range(0, len(projects)):
+                cursor.execute("select ST_X(uni.location) as long, ST_Y(uni.location) as lat, ST_X(uni_assoc.location) as long_assoc, ST_Y(uni_assoc.location) as lat_assoc from bio3science_project project inner join bio3science_university uni on project.main_university_id = uni.id inner join bio3science_project_universities pu on project.id = pu.project_id inner join bio3science_university uni_assoc on pu.university_id = uni_assoc.id where project.id = %s;", [projects[i]['id']])
+                projects[i]['universities_network'] = dictfetchall(cursor)
+
+                cursor.execute("select ST_X(uni.location) as long, ST_Y(uni.location) as lat, ST_X(community_assoc.location) as long_assoc, ST_Y(community_assoc.location) as lat_assoc from bio3science_project project inner join bio3science_university uni on project.main_university_id = uni.id inner join bio3science_project_communities pc on project.id = pc.project_id inner join bio3science_community community_assoc on pc.community_id = community_assoc.id where project.id = %s;", [projects[i]['id']])
+                projects[i]['communities_network'] = dictfetchall(cursor)
+
+            return JsonResponse(projects, safe=False)
+
+class NodesNetworkList(APIView):
+    def get(self, request, format=None):
+        with connection.cursor() as cursor:
+            cursor.execute("select main.id, main.name, main.long, main.lat, (main.points + assoc.points) as points from (select min(uni.id) as id, min(uni.name) as name, min(ST_X(uni.location)) as long, min(ST_Y(uni.location)) as lat, count(uni.id)*3 as points from bio3science_project project inner join bio3science_university uni on project.main_university_id = uni.id group by uni.id) main inner join (select university_id, count(university_id) as points from bio3science_project project inner join bio3science_project_universities pu on project.id = pu.project_id group by university_id) assoc on main.id = assoc.university_id;")
+            nodes = dictfetchall(cursor)
+            return JsonResponse(nodes, safe=False)
+
+
+        
+
+     
+        
+
 

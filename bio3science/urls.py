@@ -21,5 +21,7 @@ urlpatterns = [
     path('project/<int:pk>', views.ProjectDetail.as_view(), name='project-detail'),
     path('community', views.CommunityList.as_view(), name='community-list'),
     path('project-image', views.ProjectImageList.as_view(), name='project-image'),
+    path('project-network', views.ProjectNetworkList.as_view(), name='project-network'),
+    path('nodes-network', views.NodesNetworkList.as_view(), name='nodes-network'),
 
 ]
