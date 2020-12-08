@@ -374,11 +374,11 @@ class NodesNetworkList(APIView):
     def get(self, request, format=None):
         nodes = dict()
         with connection.cursor() as cursor:
-            cursor.execute("select uni.id, min(uni.name) as name, min(uni.long) as long, min(uni.lat) as lat, sum(uni.points) as points from (select min(uni.id) as id, min(uni.name) as name, min(ST_X(uni.location)) as long, min(ST_Y(uni.location)) as lat, 5 + count(uni.id)*3 as points from bio3science_project project inner join bio3science_university uni on project.main_university_id = uni.id group by uni.id union all select min(uni.id) as id, min(uni.name) as name, min(ST_X(uni.location)) as long, min(ST_Y(uni.location)) as lat, 5 + count(uni.id)*1 as points from bio3science_project project inner join bio3science_project_universities pu on project.id = pu.project_id inner join bio3science_university uni on pu.university_id = uni.id group by university_id) as uni group by uni.id;")
+            cursor.execute("select uni.id, min(uni.name) as name, min(uni.long) as long, min(uni.lat) as lat, 10+exp(sum(uni.points)*0.001) as points from (select min(uni.id) as id, min(uni.name) as name, min(ST_X(uni.location)) as long, min(ST_Y(uni.location)) as lat, count(uni.id)*1 as points from bio3science_project project inner join bio3science_university uni on project.main_university_id = uni.id group by uni.id union all select min(uni.id) as id, min(uni.name) as name, min(ST_X(uni.location)) as long, min(ST_Y(uni.location)) as lat, count(uni.id)*0.5 as points from bio3science_project project inner join bio3science_project_universities pu on project.id = pu.project_id inner join bio3science_university uni on pu.university_id = uni.id group by university_id) as uni group by uni.id;")
             nodes['universities'] = dictfetchall(cursor)
         
         with connection.cursor() as cursor2:
-            cursor2.execute("select pc.community_id as id, min(community.name) as name, min(ST_X(community.location)) as long, min(ST_Y(community.location)) as lat, count(pc.community_id) as points from bio3science_project_communities pc inner join bio3science_community community on pc.community_id = community.id group by pc.community_id;")
+            cursor2.execute("select pc.community_id as id, min(community.name) as name, min(ST_X(community.location)) as long, min(ST_Y(community.location)) as lat, 10+exp((count(pc.community_id) * 0.5)*0.001) as points from bio3science_project_communities pc inner join bio3science_community community on pc.community_id = community.id group by pc.community_id;")
             nodes['communities'] = dictfetchall(cursor2)
         return JsonResponse(nodes, safe=False)
 
